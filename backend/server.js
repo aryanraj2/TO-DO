@@ -43,6 +43,15 @@ mongoose.connect("mongodb+srv://josephpeterjece2021:AJ9Hg6xTtQBUCoGr@cluster1.xa
 
 //api endpoints 
 app.use("/api/user", userRouter)
+app.use("/api/user/getuser",async (req,res) => {
+    const id = req.user.id
+    try{
+        const user = await userModel.find({_id:id})
+        res.status(200).json({user: user[0]})
+    } catch(error){
+        res.status(502).json({message: error.message})
+    }
+})
 app.delete('/deletetask/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -87,6 +96,11 @@ app.put('/updatecompleted/:id', async (req, res) => {
 });
 
 app.use("/api/task", taskRouter)
+app.use("/api/task/getTask",(req, res) => {
+    taskModel.find({ userId: req.user.id })
+        .then((data) => res.status(200).json(data))
+        .catch((error) => res.status(501).json({ message: error.message }))
+})
 app.use("/api/forgotPassword", forgotPasswordRouter)
  
 //listen
